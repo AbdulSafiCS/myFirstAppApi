@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using dataModel;
+using myFirstAppApi.DTO;
 
 namespace myFirstAppApi.Controllers
 {
@@ -39,6 +40,32 @@ namespace myFirstAppApi.Controllers
             }
 
             return country;
+        }
+
+
+
+        // GET: api/CountriesPopulation/5
+        [HttpGet("country-population/{id}")]
+        public async Task<ActionResult<CountryPopulation>> GetCountryPopulation(int id)
+        {
+            var country = await _context.Countries.FindAsync(id);
+
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            int citiesPopulation = await _context.Cities.Where(x => x.CountryId == id).Select(x => x.Population).SumAsync();
+         
+
+            CountryPopulation countryPopulation = new()
+            {
+                Id = country.Id,
+                Name = country.Name,
+                Population = citiesPopulation,
+            };
+
+            return countryPopulation;
         }
 
         // PUT: api/Countries/5
