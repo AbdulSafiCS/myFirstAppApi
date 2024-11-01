@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace dataModel;
 
-public partial class MyFirstAppDatabaseContext : DbContext
+public partial class MyFirstAppDatabaseContext : IdentityDbContext<AppUser>
 {
     public MyFirstAppDatabaseContext()
     {
@@ -33,8 +34,10 @@ public partial class MyFirstAppDatabaseContext : DbContext
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<City>(entity =>
         {
+
             entity.HasOne(d => d.Country).WithMany(p => p.Cities)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cities_Countries");
