@@ -99,5 +99,9 @@ namespace myFirstAppApi.Controllers
             }
             return new JsonResult(cityCount);
         }
+        public async Task<ActionResult> ImportUsersAsync()
+        {
+
+        }
     }
 }
