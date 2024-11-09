@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using dataModel;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,7 @@ namespace myFirstAppApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SeedController(MyFirstAppDatabaseContext context,  IHostEnvironment environment) : ControllerBase
+    public class SeedController(MyFirstAppDatabaseContext context,  IHostEnvironment environment, UserManager<AppUser> userManager) : ControllerBase
     {
         private readonly string _pathName = Path.Combine(environment.ContentRootPath, "Data/worldcities.csv");
         [HttpPost("Countries")]
@@ -99,8 +100,28 @@ namespace myFirstAppApi.Controllers
             }
             return new JsonResult(cityCount);
         }
+        [HttpPost("Users")]
         public async Task<ActionResult> ImportUsersAsync()
         {
+
+            (string name, string email) = ("DonaldTrump", "donald@trump.com");
+            
+            AppUser user = new AppUser()
+            {
+                UserName = name,
+                Email = email,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            if (await userManager.FindByEmailAsync(email) is not null)
+            {
+                return Ok(user);
+            }
+            IdentityResult result = await userManager.CreateAsync(user, "Maga1234!#");
+           
+            user.EmailConfirmed = true;
+            user.LockoutEnabled = false;
+            int x = await context.SaveChangesAsync();
+            return Ok(x);
 
         }
     }
