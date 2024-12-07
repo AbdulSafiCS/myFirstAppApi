@@ -24,6 +24,7 @@ namespace myFirstAppApi.Controllers
 
         // GET: api/Countries
         [HttpGet]
+       
         public async Task<ActionResult<IEnumerable<Country>>> GetCountries()
         {
             return await _context.Countries.ToListAsync();
@@ -48,6 +49,8 @@ namespace myFirstAppApi.Controllers
 
         // GET: api/CountriesPopulation/5
         [HttpGet("country-population/{id}")]
+        [Authorize]
+
         public async Task<ActionResult<CountryPopulation>> GetCountryPopulation(int id)
         {
             var country = await _context.Countries.FindAsync(id);
